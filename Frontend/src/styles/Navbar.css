@@ -1,0 +1,38 @@
+/* Navbar container */
+.navbar {
+  width: 100%;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height:70px;
+  /* position: fixed; */
+  top: 0;
+  left: 0;
+  background: rgba(228, 26, 117, 0.6);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+/* Logo */
+.logo {
+  color: white;
+  font-size: 20px;
+}
+
+/* Links */
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: rgb(16, 15, 15);
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: #ff006a;
+}

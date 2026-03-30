@@ -1,0 +1,228 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+/* Container */
+.home-container {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background: linear-gradient(135deg, #d2bcc0, #d591aa, #bb4c75);
+  color: rgb(241, 229, 233);
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  animation: fadeUp 1.2s ease-in-out;
+  margin-top: 90px;
+}
+
+.hero-text {
+  font-size: 3.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.hero-text span {
+  color: #f5f0f0;
+}
+
+/* Button */
+.start-btn {
+  padding: 16px 28px;
+  font-size: 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  background:#47435c;
+  color: white;
+  transition: 0.3s;
+  animation: fadeUp 1.5s ease-in-out;
+  margin-top:70px;
+}
+
+.symptoms {
+  font-size: 48px;
+  font-weight: bold;
+  background: linear-gradient(to right, #080808, #f57373);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top:50px;
+  animation: fadeUp 1.5s ease-in-out;
+
+}
+.start-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+}
+
+/* Cards Section */
+.cards-section {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px 20px;
+  flex-wrap: wrap;
+
+  animation: fadeUp 1.5s ease-in-out;
+}
+
+/* Individual Card */
+.card {
+  background: rgba(255, 255, 255, 1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+
+  width: 280px;
+  padding: 25px;
+  text-align: center;
+
+  transition: 0.3s ease;
+  cursor: pointer;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Card Heading */
+.card h2 {
+  margin-bottom: 15px;
+  color: #000000;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+/* Card Text */
+.card p {
+  font-size: 14px;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+/* Hover Effect */
+.card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 10px 30px rgba(66, 65, 65, 0.3);
+}
+
+/* Tags container */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+  color: #000;
+}
+
+/* Individual tag */
+.tags span {
+  background: rgba(253, 158, 218, 0.15);
+  border: 1px solid rgba(234, 117, 164, 0.4);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  transition: 0.3s;
+}
+
+/* Hover effect */
+.tags span:hover {
+  background: #cf6283;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* Footer */
+.footer {
+  background: rgb(214, 144, 176);
+  backdrop-filter: blur(10px);
+  padding: 40px 20px 20px;
+  margin-top: 20px;
+}
+
+/* Container */
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+/* Sections */
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-section h3,
+.footer-section h4 {
+  margin-bottom: 10px;
+  color: #232526;
+}
+
+.footer-section p,
+.footer-section li {
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 6px 0;
+}
+
+/* Links */
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.footer-section ul li:hover {
+  color: #371222;
+}
+
+/* Bottom strip */
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  opacity: 0.7;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
