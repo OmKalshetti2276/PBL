@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import requests
 
 from services.prediction_service import (
     predict_diabetes,
     predict_pcos,
     predict_thyroid
 )
-
+from services.chatbot_logic import detect_intent, generate_response
 
 
 app = Flask(__name__)
@@ -69,12 +70,25 @@ def predict_all():
                 "probability": round(pcos_prob * 100, 2),
                 "risk": get_risk_level(pcos_prob)
             }
-
         return jsonify(result)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    message = data.get("message", "")
+    prediction = data.get("prediction") or {}
+
+    # ✅ use the logic from chatbot_logic.py
+    intent = detect_intent(message)
+    reply = generate_response(intent, prediction)
+
+    return jsonify({"reply": reply})
+
 if __name__ == "__main__":
     app.run(debug=True)
+
