@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "../styles/Input.css";
+import { useNavigate } from "react-router-dom";
 
 const Input = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     gender: "",
     Pregnancies: "",
@@ -29,85 +32,70 @@ const Input = () => {
     T4U: "",
     FTI: ""
   });
-  const [result, setResult] = useState(null);
 
+  const [error, setError] = useState("");
+
+  // 🔄 Handle Change
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+
+    let updatedData = { ...formData, [id]: value };
+
+    // 🔥 Auto-fix: male → pregnancies = 0
+    if (id === "gender" && value === "male") {
+      updatedData.Pregnancies = 0;
+    }
+
+    setFormData(updatedData);
   };
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
+  // 🚀 Submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError("");
 
-  try {
-    const payload = {
-      gender: formData.gender,
+    // ❗ Required check
+    if (!formData.gender) {
+      setError("Please select gender");
+      return;
+    }
 
-     // Diabetes
-Pregnancies: parseFloat(formData.Pregnancies) || 0,
-Glucose: parseFloat(formData.Glucose) || 0,
-BloodPressure: parseFloat(formData.BloodPressure) || 0,
-SkinThickness: parseFloat(formData.SkinThickness) || 0,
-Insulin: parseFloat(formData.Insulin) || 0,
-BMI: parseFloat(formData.BMI) || 0,
-DiabetesPedigreeFunction: parseFloat(formData.DPF) || 0,
-Age: parseFloat(formData.Age) || 0,
+    // ❗ Male constraint
+    if (formData.gender === "male" && formData.Pregnancies > 0) {
+      setError("Pregnancies must be 0 for male users");
+      return;
+    }
 
-// PCOS
-"Follicle No. (R)": parseFloat(formData.folR) || 0,
-"Follicle No. (L)": parseFloat(formData.folL) || 0,
-"Skin darkening (Y/N)": parseFloat(formData.skin) || 0,
-"hair growth(Y/N)": parseFloat(formData.hair) || 0,
-"Weight gain(Y/N)": parseFloat(formData.weight) || 0,
-"AMH(ng/mL)": parseFloat(formData.amh) || 0,
-"Cycle(R/I)": parseFloat(formData.cycle) || 0,
-"FSH/LH": parseFloat(formData.ratio) || 0,
-"LH(mIU/mL)": parseFloat(formData.lh) || 0,
-"Fast food (Y/N)": parseFloat(formData.fastfood) || 0,
+    // ❗ Age sanity
+    if (formData.Age < 10 || formData.Age > 100) {
+      setError("Enter valid age (10 – 100)");
+      return;
+    }
 
-// Thyroid
-age: parseFloat(formData.Age) || 0,
-sex: formData.gender === "male" ? 1 : 0,
-TSH: parseFloat(formData.TSH) || 0,
-TT4: parseFloat(formData.TT4) || 0,
-T4U: parseFloat(formData.T4U) || 0,
-FTI: parseFloat(formData.FTI) || 0
+    // ❗ BMI sanity
+    if (formData.BMI < 10 || formData.BMI > 60) {
+      setError("BMI seems unrealistic");
+      return;
+    }
+
+    // 🔥 Mock result (for now)
+    const fakeResult = {
+      diabetes: Math.floor(Math.random() * 100),
+      pcos: formData.gender === "female" ? Math.floor(Math.random() * 100) : null,
+      thyroid: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)]
     };
 
-    const response = await fetch("http://127.0.0.1:5000/predict_all", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-
-    console.log(result);
-
-    // 🔥 FORMAT RESULT FOR UI
-    setResult({
-  diabetes_prob: result.diabetes?.probability || 0,
-  diabetes_risk: result.diabetes?.risk || "Unknown",
-
-  pcos_prob: result.pcos?.probability ?? null,
-  pcos_risk: result.pcos?.risk ?? "Unknown",
-
-  thyroid_prob: result.thyroid?.probability || 0,
-  thyroid_risk: result.thyroid?.risk || "Unknown"
-});
-
-  } catch (err) {
-    console.error(err);
-    alert("Server error!");
-  }
-
-};
+    // 🚀 Navigate to results
+    navigate("/result", { state: fakeResult });
+  };
 
   return (
     <div className="input-container">
       <div className="form-card">
         <h1 className="title">Hormonal Health Risk Predictor</h1>
+
+        {/* ❗ Error */}
+        {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleSubmit}>
 
@@ -116,7 +104,7 @@ FTI: parseFloat(formData.FTI) || 0
             <h3>Basic Info</h3>
             <div className="field">
               <label>Gender</label>
-              <select id="gender" onChange={handleChange}>
+              <select id="gender" onChange={handleChange} required>
                 <option value="">Select</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -131,47 +119,51 @@ FTI: parseFloat(formData.FTI) || 0
 
               <div className="field">
                 <label>Pregnancies</label>
-                <select id="Pregnancies" onChange={handleChange}>
-                <option value="">Select</option>
-                {[...Array(16).keys()].map((num) => (
+                <select
+                  id="Pregnancies"
+                  onChange={handleChange}
+                  disabled={formData.gender === "male"}
+                >
+                  <option value="">Select</option>
+                  {[...Array(16).keys()].map((num) => (
                     <option key={num} value={num}>{num}</option>
-                ))}
+                  ))}
                 </select>
               </div>
 
               <div className="field">
                 <label>Glucose</label>
-                <input type="number" id="Glucose" placeholder="70 – 140 mg/dL" onChange={handleChange}/>
+                <input type="number" step="any" id="Glucose" placeholder="70 – 140" onChange={handleChange} required />
               </div>
 
               <div className="field">
                 <label>Blood Pressure</label>
-                <input type="number" id="BloodPressure" placeholder="60 – 140 mmHg" onChange={handleChange}/>
+                <input type="number" step="any" id="BloodPressure" placeholder="60 – 140" onChange={handleChange} required />
               </div>
 
               <div className="field">
                 <label>Skin Thickness</label>
-                <input type="number" id="SkinThickness" placeholder="10 – 50" onChange={handleChange}/>
+                <input type="number" step="any" id="SkinThickness" placeholder="10 – 50" onChange={handleChange} required />
               </div>
 
               <div className="field">
                 <label>Insulin</label>
-                <input type="number" id="Insulin" placeholder="15 – 276" onChange={handleChange}/>
+                <input type="number" step="any" id="Insulin" placeholder="15 – 276" onChange={handleChange} required />
               </div>
 
               <div className="field">
                 <label>BMI</label>
-                <input type="number" id="BMI" placeholder="18.5 – 24.9" onChange={handleChange}/>
+                <input type="number" id="BMI" step="any" placeholder="18.5 – 24.9" onChange={handleChange} required />
               </div>
 
               <div className="field">
-                <label>Diabetes Pedigree</label>
-                <input type="number" id="DPF" placeholder="0.1 – 2.5" onChange={handleChange}/>
+                <label>DPF</label>
+                <input type="number" step="any" id="DPF" placeholder="0.1 – 2.5" onChange={handleChange} required />
               </div>
 
               <div className="field">
                 <label>Age</label>
-                <input type="number" id="Age" placeholder="10 – 100" onChange={handleChange}/>
+                <input type="number" id="Age" placeholder="10 – 100" onChange={handleChange} required />
               </div>
 
             </div>
@@ -183,75 +175,43 @@ FTI: parseFloat(formData.FTI) || 0
               <h3>PCOS Inputs</h3>
               <div className="grid">
 
-                <div className="field">
-                  <label>Follicle (R)</label>
-                  <input type="number" id="folR" placeholder="0 – 30" onChange={handleChange}/>
-                </div>
+                <input type="number" id="folR" placeholder="Follicle R (0–30)" onChange={handleChange} required />
+                <input type="number" id="folL" placeholder="Follicle L (0–30)" onChange={handleChange} required />
 
-                <div className="field">
-                  <label>Follicle (L)</label>
-                  <input type="number" id="folL" placeholder="0 – 30" onChange={handleChange}/>
-                </div>
+                <select id="skin" onChange={handleChange} required>
+                  <option value="">Skin Darkening</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
 
-                <div className="field">
-                  <label>Skin Darkening</label>
-                  <select id="skin" onChange={handleChange}>
-                    <option value="">Select</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                </div>
+                <select id="hair" onChange={handleChange} required>
+                  <option value="">Hair Growth</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
 
-                <div className="field">
-                  <label>Hair Growth</label>
-                  <select id="hair" onChange={handleChange}>
-                    <option value="">Select</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                </div>
+                <select id="weight" onChange={handleChange} required>
+                  <option value="">Weight Gain</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
 
-                <div className="field">
-                  <label>Weight Gain</label>
-                  <select id="weight" onChange={handleChange}>
-                    <option value="">Select</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                </div>
+                <input type="number" step="any" id="amh" placeholder="AMH (1–10)" onChange={handleChange} required />
 
-                <div className="field">
-                  <label>AMH</label>
-                  <input type="number" id="amh" placeholder="1 – 10" onChange={handleChange}/>
-                </div>
+                <select id="cycle" onChange={handleChange} required>
+                  <option value="">Cycle</option>
+                  <option value="0">Regular</option>
+                  <option value="1">Irregular</option>
+                </select>
 
-                <div className="field">
-                  <label>Cycle</label>
-                  <select id="cycle" onChange={handleChange}>
-                    <option value="">Select</option>
-                    <option value="0">Regular</option>
-                    <option value="1">Irregular</option>
-                  </select>
-                </div>
+                <input type="number" step="any" id="ratio" placeholder="FSH/LH (1–3)" onChange={handleChange} required />
+                <input type="number" step="any" id="lh" placeholder="LH (1–20)" onChange={handleChange} required />
 
-                <div className="field">
-                  <label>FSH/LH Ratio</label>
-                  <input type="number" id="ratio" placeholder="1 – 3" onChange={handleChange}/>
-                </div>
-
-                <div className="field">
-                  <label>LH</label>
-                  <input type="number" id="lh" placeholder="1 – 20" onChange={handleChange}/>
-                </div>
-
-                <div className="field">
-                  <label>Fast Food</label>
-                  <select id="fastfood" onChange={handleChange}>
-                    <option value="">Select</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                </div>
+                <select id="fastfood" onChange={handleChange} required>
+                  <option value="">Fast Food</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
 
               </div>
             </div>
@@ -262,25 +222,10 @@ FTI: parseFloat(formData.FTI) || 0
             <h3>Thyroid Inputs</h3>
             <div className="grid">
 
-              <div className="field">
-                <label>TSH</label>
-                <input type="number" id="TSH" placeholder="0.4 – 4.0" onChange={handleChange}/>
-              </div>
-
-              <div className="field">
-                <label>TT4</label>
-                <input type="number" id="TT4" placeholder="5 – 12" onChange={handleChange}/>
-              </div>
-
-              <div className="field">
-                <label>T4U</label>
-                <input type="number" id="T4U" placeholder="0.8 – 1.8" onChange={handleChange}/>
-              </div>
-
-              <div className="field">
-                <label>FTI</label>
-                <input type="number" id="FTI" placeholder="1 – 4" onChange={handleChange}/>
-              </div>
+              <input type="number" step="any" id="TSH" placeholder="TSH (0.4–4.0)" onChange={handleChange} required />
+              <input type="number" step="any" id="TT4" placeholder="TT4 (5–12)" onChange={handleChange} required />
+              <input type="number" step="any" id="T4U" placeholder="T4U (0.8–1.8)" onChange={handleChange} required />
+              <input type="number" step="any" id="FTI" placeholder="FTI (1–4)" onChange={handleChange} required />
 
             </div>
           </div>
@@ -290,43 +235,6 @@ FTI: parseFloat(formData.FTI) || 0
           </button>
 
         </form>
-
-        {result && (
-  <div className="result-container">
-
-    {/* Diabetes */}
-    <div className="result-card">
-  <h3>🩺 Diabetes</h3>
-
-  <div className="progress-bar">
-    <div
-      className="progress"
-      style={{ width: `${result.diabetes_prob}%` }}
-    ></div>
-  </div>
-
-  <p>{result.diabetes_prob}% Risk</p>
-  <p className="badge">{result.diabetes_risk}</p>
-</div>
-            
-    {/* PCOS */}
-    {result.pcos_prob !== null && (
-      <div className="result-card">
-        <h3>🌸 PCOS</h3>
-        <p>{result.pcos_prob}% Risk</p>
-<p className="badge">{result.pcos_risk}</p>
-      </div>
-    )}
-
-    {/* Thyroid */}
-    <div className="result-card">
-      <h3>🧠 Thyroid</h3>
-      <p>{result.thyroid_prob}% Risk</p>
-<p className="badge">{result.thyroid_risk}</p>
-    </div>
-
-  </div>
-)}
       </div>
     </div>
   );

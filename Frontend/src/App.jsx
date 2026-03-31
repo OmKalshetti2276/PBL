@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import Result from "./pages/Result";
 import Input from "./pages/Input";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/predict" element={<Input />} />
+            <Route path="/result" element={<Result />} />
           </Routes>
         </main>
 
