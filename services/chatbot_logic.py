@@ -43,6 +43,21 @@ def detect_intent(message):
         return "exercise"
     if any(word in message for word in ["symptoms", "signs"]):
         return "symptoms"
+    # Advanced intents
+    if any(word in message for word in ["report", "values", "levels"]):
+        return "report_analysis"
+
+    if any(word in message for word in ["is this serious", "how bad", "dangerous"]):
+        return "severity"
+
+    if any(word in message for word in ["what should i do", "next step", "what now"]):
+        return "next_steps"
+
+    if "difference" in message or "vs" in message:
+        return "comparison"
+
+    if any(word in message for word in ["can i cure", "is it reversible"]):
+        return "reversibility"
     if any(word in message for word in ["my result", "am i", "risk"]):
         return "result"
 
@@ -125,6 +140,56 @@ These help evaluate blood sugar control."""
 • Weight gain
 • Acne
 • Fatigue"""
+
+    if intent == "report_analysis":
+        return """To understand your report:
+
+    • Check hormone levels (LH, FSH, TSH)
+    • Compare values with normal ranges
+    • Look for patterns (e.g., high LH/FSH ratio in PCOS)
+
+    If values are slightly abnormal → manageable  
+    If highly abnormal → consult a doctor
+
+    Always interpret reports along with symptoms."""
+
+    if intent == "severity":
+        return """Severity depends on your test results and symptoms:
+
+    • Mild: Slight imbalance, manageable with lifestyle
+    • Moderate: Needs monitoring and possible medication
+    • Severe: Requires medical supervision
+
+    Early detection improves outcomes significantly."""
+
+    if intent == "next_steps":
+        return """Next steps you should take:
+
+    1. Review your test results carefully
+    2. Improve lifestyle (diet + exercise)
+    3. Track symptoms regularly
+    4. Consult a doctor if symptoms persist
+    5. Repeat tests if required
+
+    Early action can prevent complications."""
+
+    if intent == "comparison":
+        return """Difference between conditions:
+
+    • PCOS: Hormonal imbalance affecting ovaries
+    • Diabetes: Blood sugar regulation issue
+    • Thyroid: Metabolism-related hormone disorder
+
+    Each condition affects the body differently but can be managed with proper care."""
+
+    if intent == "reversibility":
+        return """Some conditions can be managed effectively:
+
+    • PCOS: Not completely curable, but symptoms can be controlled
+    • Diabetes: Type 2 can be reversed in early stages with lifestyle changes
+    • Thyroid: Usually managed with medication
+
+    Consistency in treatment is key."""
 
     if intent == "result":
         diabetes = prediction.get("diabetes", {}).get("risk", "Unknown")
