@@ -82,11 +82,25 @@ const Input = () => {
     const fakeResult = {
       diabetes: Math.floor(Math.random() * 100),
       pcos: formData.gender === "female" ? Math.floor(Math.random() * 100) : null,
-      thyroid: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)]
+      thyroid: Math.floor(Math.random() * 100)
     };
 
+    // ✅ Save to localStorage (for refresh safety)
+    localStorage.setItem(
+      "result",
+      JSON.stringify({
+        inputs: formData,
+        result: fakeResult
+      })
+    );
+
     // 🚀 Navigate to results
-    navigate("/result", { state: fakeResult });
+    navigate("/result", {
+      state: {
+        inputs: formData,
+        result: fakeResult
+      }
+    });
   };
 
   return (
